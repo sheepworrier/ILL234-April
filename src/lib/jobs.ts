@@ -9,9 +9,36 @@ import type { Job } from '../types/job';
 
 /** Return jobs sorted by posted date, newest first (does not mutate input). */
 export function sortByNewest(jobs: Job[]): Job[] {
-    return [...jobs].sort(
-        (a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime(),
-    );
+  return [...jobs].sort(
+    (a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime(),
+  );
+}
+
+/** Return a new list containing jobs that match every selected filter. */
+export function filterJobs(
+  jobs: Job[],
+  department = '',
+  location = '',
+): Job[] {
+  return jobs.filter(
+    (job) =>
+      (!department || job.department === department) &&
+      (!location || job.location === location),
+  );
+}
+
+/** Return the unique department names in alphabetical order. */
+export function getUniqueDepartments(jobs: Job[]): string[] {
+  return [...new Set(jobs.map((job) => job.department))].sort((a, b) =>
+    a.localeCompare(b),
+  );
+}
+
+/** Return the unique location names in alphabetical order. */
+export function getUniqueLocations(jobs: Job[]): string[] {
+  return [...new Set(jobs.map((job) => job.location))].sort((a, b) =>
+    a.localeCompare(b),
+  );
 }
 
 /**
@@ -19,14 +46,14 @@ export function sortByNewest(jobs: Job[]): Job[] {
  * e.g. "January 5, 2027". Falls back to the raw value if unparseable.
  */
 export function formatPostedDate(iso: string): string {
-    const date = new Date(iso);
-    if (Number.isNaN(date.getTime())) {
-        return iso;
-    }
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        timeZone: 'UTC',
-    });
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    return iso;
+  }
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
 }
